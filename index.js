@@ -1,17 +1,23 @@
 'use strict';
 
-const http = require("http");
-const port = 3000;
+const Hapi = require('hapi');
 
-const server = http.createServer(function (request, response) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World!');
-})
+const defaultPort = 3000;
 
-server.listen(port, (err) => {
-  if(err) {
-    return console.log(err);
-  }
+const server = new Hapi.Server();
+server.connection({ port: ~~process.env.PORT || defaultPort });
 
-  console.log('Server is running on: ', server.address());
+server.route({
+    method: 'GET',
+    path: '/',
+    handler: function(request, reply) {
+        reply('Hello world');
+    }
+});
+
+server.start((err) => {
+    if (err) {
+        throw err;
+    }
+    console.log(`Server running at: ${server.info.uri}`);
 });
